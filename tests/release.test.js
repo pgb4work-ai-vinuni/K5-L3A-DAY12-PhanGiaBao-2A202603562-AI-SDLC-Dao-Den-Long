@@ -74,10 +74,10 @@ test('bảng xếp hạng: lưu đĩa, top 10, điểm giảm dần, bằng đi�
     for (let i = 0; i < 12; i++) LB.add({ name: 'Mây_' + i, score: i % 3 === 0 ? 500 : i * 10, nights_won: 1, achieved_at: new Date(Date.UTC(2026, 10, 20, 10, i)).toISOString(), seed: i });
     let bad = 0; for (const n of ['ab', 'tên có cách', 'x'.repeat(13)]) { try { LB.add({ name: n, score: 1, nights_won: 0, achieved_at: new Date().toISOString(), seed: 1 }); } catch { bad++; } }
     LB.add({ name: 'Đăng', score: 1, nights_won: 0, achieved_at: new Date().toISOString(), seed: 1 });
-    console.log(bad);`;
-  const r = spawnSync(process.execPath, ['--input-type=module', '-e', code], { encoding: 'utf8', env });
+    process.stdout.write(String(bad));`; // chuỗi thuần: không bị tô màu khi FORCE_COLOR bật
+  const r = spawnSync(process.execPath, ['--input-type=module', '-e', code], { encoding: 'utf8', env: { ...env, NO_COLOR: '1', FORCE_COLOR: '0' } });
   assert.equal(r.status, 0, r.stderr);
-  assert.equal(r.stdout.trim(), '3');
+  assert.equal(r.stdout.replace(/\u001b\[[0-9;]*m/g, '').trim(), '3'); // bỏ mã màu ANSI nếu terminal vẫn tô màu
   const out = path.join(tmp, 'export.json');
   const e = spawnSync(process.execPath, [path.join(ROOT, 'scripts', 'serve.js'), '--export-leaderboard', out], { encoding: 'utf8', env });
   assert.equal(e.status, 0, e.stderr);
