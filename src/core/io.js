@@ -1,6 +1,6 @@
-// Đọc/kiểm tra file inputs và scenario theo Test Contract v1.0.
+// Đọc/kiểm tra file inputs và scenario theo Test Contract v1.2.
 const BUTTONS = ['jump', 'interact', 'pulse', 'dash', 'pause'];
-const SHADE_STATES = ['spawning', 'wander', 'chase', 'recoil', 'stunned'];
+const SHADE_STATES = ['spawning', 'wander', 'chase', 'recoil', 'stunned', 'drain'];
 const DRIFTER_STATES = ['idle', 'chase', 'flee', 'removed'];
 const isInt = (x) => Number.isInteger(x) && x >= 0;
 const isNum = (x) => typeof x === 'number' && Number.isFinite(x);
@@ -42,7 +42,7 @@ export function validateScenario(sc) {
     if (p.pos !== undefined && !isVec3(p.pos)) return 'player.pos phải là [x,y,z]';
     if (p.carried !== undefined && !(Number.isInteger(p.carried) && p.carried >= 0)) return 'player.carried';
     if (p.flames !== undefined && !(Number.isInteger(p.flames) && p.flames >= 0)) return 'player.flames';
-    for (const k of ['invuln_ticks', 'dash_cd_ticks', 'pulse_cd_ticks', 'charm_ticks']) if (p[k] !== undefined && !isInt(p[k])) return `player.${k}`;
+    for (const k of ['invuln_ticks', 'dash_cd_ticks', 'pulse_cd_ticks', 'charm_ticks', 'successful_lights']) if (p[k] !== undefined && !isInt(p[k])) return `player.${k}`;
   }
   for (const k of ['random_motes', 'random_shades', 'random_drifters', 'wind_enabled']) if (sc[k] !== undefined && typeof sc[k] !== 'boolean') return `${k} phải là boolean`;
   if (sc.motes !== undefined) {
@@ -80,6 +80,8 @@ export function validateScenario(sc) {
       if (l.pos !== undefined && !isVec3(l.pos)) return 'lantern.pos phải là [x,y,z]';
       if (l.lit !== undefined && typeof l.lit !== 'boolean') return 'lantern.lit phải là boolean';
       if (l.deposited !== undefined && !(Number.isInteger(l.deposited) && l.deposited >= 0)) return 'lantern.deposited';
+      if (l.fuel !== undefined && !(isNum(l.fuel) && l.fuel >= 0)) return 'lantern.fuel';
+      if (l.ever_lit !== undefined && typeof l.ever_lit !== 'boolean') return 'lantern.ever_lit phải là boolean';
     }
   }
   if (sc.time_left_s !== undefined && !(isNum(sc.time_left_s) && sc.time_left_s >= 0)) return 'time_left_s phải là số >= 0';

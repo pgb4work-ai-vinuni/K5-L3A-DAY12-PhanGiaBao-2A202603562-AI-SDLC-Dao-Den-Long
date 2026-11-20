@@ -19,7 +19,7 @@ const NIGHT = { p2_drifter: 2, p2_charm: 2, p2_jump_pad: 2, p2_night3_tiers: 3, 
 const names = fs.readdirSync(SC).filter((f) => f.endsWith('.scenario.json')).map((f) => f.replace('.scenario.json', '')).sort();
 for (const name of names) {
   const out = path.join(OUT, `${name}.jsonl`);
-  const ticks = name === 'p2_wind' ? '2100' : '600';
+  const ticks = name === 'p2_wind' ? '2100' : name === 'win_last_lantern' ? '4000' : '600';
   const r = run(['--seed', '1', '--night', String(NIGHT[name] || 1), '--scenario', path.join(SC, `${name}.scenario.json`),
     '--inputs', path.join(SC, `${name}.inputs.json`), '--ticks', ticks, '--snapshot-every', '60', '--out', out]);
   const lines = fs.readFileSync(out, 'utf8').trim().split('\n');

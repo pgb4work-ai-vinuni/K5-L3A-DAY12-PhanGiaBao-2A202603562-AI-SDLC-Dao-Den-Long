@@ -50,3 +50,8 @@ canvas { display: block; }
 .card button.ghost { background: transparent; color: var(--text); border: 1px solid var(--off); }
 .card label { display: flex; justify-content: space-between; gap: 12px; margin: 12px 0; }
 .keys { text-align: left; padding-left: 18px; line-height: 1.8; font-size: 14px; opacity: 0.85; }
+
+/* Ticket-03: chế độ mù màu — cảnh báo UI dùng trắng thay đỏ */
+body.cb .tc.danger { color: #FFFFFF; }
+.bc::after { content: attr(data-label); position: absolute; top: -22px; left: 50%; transform: translateX(-50%); font-size: 14px; }
+.bc { flex-wrap: wrap; max-width: 560px; justify-content: center; }

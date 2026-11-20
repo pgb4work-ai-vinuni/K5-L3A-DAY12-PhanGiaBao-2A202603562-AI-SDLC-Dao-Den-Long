@@ -1,0 +1,24 @@
+contract_example: exit=0, 14 dòng, end={"type":"end","ticks":413,"state":"lost","score":0}
+p2_charm: exit=0, 17 dòng, end={"type":"end","ticks":600,"state":"playing","score":0}
+p2_dash: exit=0, 15 dòng, end={"type":"end","ticks":600,"state":"playing","score":0}
+p2_drifter: exit=0, 16 dòng, end={"type":"end","ticks":600,"state":"playing","score":0}
+p2_fall: exit=0, 14 dòng, end={"type":"end","ticks":600,"state":"playing","score":0}
+p2_hit_drop: exit=0, 10 dòng, end={"type":"end","ticks":210,"state":"lost","score":0}
+p2_jump_pad: exit=0, 13 dòng, end={"type":"end","ticks":600,"state":"playing","score":0}
+p2_night3_tiers: exit=0, 13 dòng, end={"type":"end","ticks":600,"state":"playing","score":0}
+p2_pause: exit=0, 16 dòng, end={"type":"end","ticks":600,"state":"playing","score":0}
+p2_pulse: exit=0, 12 dòng, end={"type":"end","ticks":285,"state":"lost","score":5}
+p2_safe_zone: exit=0, 15 dòng, end={"type":"end","ticks":600,"state":"playing","score":150}
+p2_wind: exit=0, 38 dòng, end={"type":"end","ticks":2100,"state":"playing","score":0}
+p3_dawn_win: exit=0, 6 dòng, end={"type":"end","ticks":120,"state":"won","score":594}
+p3_drain: exit=0, 18 dòng, end={"type":"end","ticks":600,"state":"playing","score":0}
+p3_fuel_out: exit=0, 16 dòng, end={"type":"end","ticks":600,"state":"playing","score":65}
+p3_refuel: exit=0, 14 dòng, end={"type":"end","ticks":600,"state":"playing","score":20}
+win_last_lantern: exit=0, 76 dòng, end={"type":"end","ticks":3600,"state":"won","score":753}
+night 1 determinism seed 42: GIỐNG HỆT (run1 206 ms, {"type":"end","ticks":14400,"state":"lost","score":0})
+night 2 determinism seed 42: GIỐNG HỆT (run1 291 ms, {"type":"end","ticks":16200,"state":"lost","score":0})
+night 3 determinism seed 42: GIỐNG HỆT (run1 130 ms, {"type":"end","ticks":3971,"state":"lost","score":0})
+perf night 1: 230 ms cho 14400 tick (exit 0, yêu cầu <= 30000 ms)
+perf night 2: 319 ms cho 16200 tick (exit 0, yêu cầu <= 30000 ms)
+perf night 3: 472 ms cho 18000 tick (exit 0, yêu cầu <= 30000 ms)
+bad inputs exit code: 2

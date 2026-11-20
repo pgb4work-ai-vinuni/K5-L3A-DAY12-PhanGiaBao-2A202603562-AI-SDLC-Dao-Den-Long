@@ -1,4 +1,5 @@
-// Test đơn vị cho logic thuần (src/core) theo Ticket-02 / Contract v1.1. Chạy: npm test
+// Test đơn vị cho logic thuần (src/core) theo Ticket-02/03 / Contract v1.2. Chạy: npm test
+// Test bị Ticket-03 [THAY THẾ] luật đã được sửa/xóa kèm lý do (xem CHANGELOG.md, docs/notes/phase-3-assumptions.md).
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -12,23 +13,26 @@ const mk = (extra, night = 1, seed = 1) => new Game(T, { seed, night, scenario: 
 const run = (g, n, input = {}) => { const ev = []; for (let i = 0; i < n; i++) ev.push(...g.step(input)); return ev; };
 const near = (a, b, e = 1e-6) => assert.ok(Math.abs(a - b) <= e, `${a} != ${b}`);
 
-test('contract v1.1: tuning = số chuẩn Ticket-02', () => {
+test('contract v1.2: tuning = số chuẩn Ticket-02 + Ticket-03', () => {
   const c = JSON.parse(fs.readFileSync(new URL('../game.contract.json', import.meta.url)));
-  assert.equal(c.contract_version, '1.1');
+  assert.equal(c.contract_version, '1.2');
+  assert.deepEqual([T.fuel_max, T.fuel_decay_per_s, T.fuel_per_mote, T.relight_cost, T.win_ratio, T.drain_per_s, T.low_fuel_threshold, T.capacity_max],
+    [100, 1, 10, 5, 0.6, 5, 30, 20]);
   assert.deepEqual([T.player_speed, T.carry_capacity, T.lantern_cost, T.pickup_radius, T.interact_radius],
     [6, 10, 10, 1, 2]);
   assert.deepEqual([T.pulse_cost, T.pulse_radius, T.pulse_cooldown_s, T.pulse_stun_s, T.pulse_push_m], [3, 5, 3, 2, 4]);
   assert.deepEqual([T.dash_speed, T.dash_duration_s, T.dash_cooldown_s], [14, 0.2, 1.5]);
-  assert.deepEqual([T.night1_duration_s, T.night2_duration_s, T.night3_duration_s], [300, 330, 360]);
+  assert.deepEqual([T.night1_duration_s, T.night2_duration_s, T.night3_duration_s], [240, 270, 300]); // Ticket-03 đổi
   assert.deepEqual([T.safe_radius, T.shade_speed, T.shade_hit_radius, T.invuln_s, T.flames], [6, 4, 1, 1.5, 3]);
   assert.equal(T.fall_enabled, true);
-  assert.deepEqual(T.score, { per_mote: 10, per_lantern: 100, per_stun: 5, per_second_left: 2, per_flame_left: 50 });
+  // Ticket-03 [THAY THẾ] điểm: +5/đom đóm nạp, +100 thắp đầu, +40 thắp lại, bỏ thưởng thời gian
+  assert.equal(T.score.per_mote, 5); assert.equal(T.score.per_relight, 40); assert.equal(T.score.per_second_left, 0);
 });
 
 test('bản đồ chuẩn: số đèn, thời gian, vị trí đèn mỗi Đêm', () => {
   const s = [1, 2, 3].map((n) => new Game(T, { seed: 1, night: n }).snapshot());
   assert.deepEqual(s.map((x) => x.lanterns.length), [5, 6, 7]);
-  assert.deepEqual(s.map((x) => x.time_left_s), [300, 330, 360]);
+  assert.deepEqual(s.map((x) => x.time_left_s), [240, 270, 300]);
   assert.deepEqual(s[0].lanterns[1].pos, [23.8, 0, 7.7]);
   assert.deepEqual(s[1].lanterns[4].pos, [87, 0, -10]);
   assert.deepEqual(s[2].lanterns[0].pos, [0, 6, 6]);
@@ -43,7 +47,7 @@ test('player_speed 6 m/s: đi +Z 120 tick = 12 m', () => {
   const g = mk({});
   run(g, 120, { move: [0, 1] });
   assert.deepEqual(g.snapshot().player.pos, [0, 0, 12]);
-  assert.equal(g.snapshot().time_left_s, 298);
+  assert.equal(g.snapshot().time_left_s, 238);
 });
 
 test('cam_yaw_deg xoay hướng đi đúng công thức', () => {
@@ -61,18 +65,19 @@ test('nhặt: XZ <= 1.0 và chênh cao <= 1.5', () => {
   assert.equal(g2.player.carried, 0); // chênh cao 3 m: không nhặt
 });
 
-test('nạp đèn: min(đang mang, còn thiếu), nhiều lần, +10 mỗi đom đóm nạp', () => {
+test('nạp đèn: min(đang mang, còn thiếu), nhiều lần, +5 mỗi đom đóm nạp (Ticket-03)', () => {
   const g = mk({ player: { pos: [0, 0, 23.5], carried: 6 } });
   const e1 = g.step({ interact: true });
   assert.deepEqual(e1[0].data, { lantern_id: 'L1', amount: 6, deposited: 6 });
-  assert.equal(g.score, 60);
+  assert.equal(g.score, 30);
   g.player.carried = 7;
   g.step({ interact: false });
   const e2 = g.step({ interact: true });
   assert.deepEqual(e2.map((e) => e.name), ['deposit', 'lantern_lit']);
   assert.equal(e2[0].data.amount, 4);
+  assert.equal(e2[1].data.relight, false);
   assert.equal(g.player.carried, 3);
-  assert.equal(g.score, 100 + 100);
+  assert.equal(g.score, 50 + 100);
 });
 
 test('nạp đèn: bằng khoảng cách thì chọn id nhỏ hơn', () => {
@@ -278,12 +283,131 @@ test('lịch sinh: 2 Bóng Mực ở tick 300 (S1, S2, spawning, cách >= 15 m),
   assert.deepEqual(ev2.filter((e) => e.name === 'shade_spawned').map((e) => e.tick), [780]);
 });
 
-test('thắng xét trước hết giờ: thắp đèn cuối đúng tick hết giờ vẫn thắng', () => {
+// Đã XÓA test 'thắng xét trước hết giờ: thắp đèn cuối đúng tick hết giờ vẫn thắng' (Phase 2):
+// Ticket-03 [THAY THẾ] luật thắng; thay bằng các test dawn_survived bên dưới.
+test('Ticket-03: thắp đủ đèn KHÔNG kết thúc Đêm', () => {
   const lit = ['L2', 'L3', 'L4', 'L5'].map((id) => ({ id, lit: true }));
-  const g = mk({ player: { pos: [0, 0, 24], carried: 10 }, lanterns: lit, time_left_s: 1 / 60 });
+  const g = mk({ player: { pos: [0, 0, 24], carried: 10 }, lanterns: lit });
+  g.step({ interact: true });
+  assert.equal(g.litCount(), 5);
+  assert.equal(g.state, 'playing');
+});
+
+test('Ticket-03: bình minh với >= ceil(0.6 × tổng) đèn sáng => thắng dawn_survived, điểm thưởng mới', () => {
+  const lit = ['L1', 'L2', 'L3'].map((id) => ({ id, lit: true, fuel: 50 }));
+  const g = mk({ lanterns: lit, time_left_s: 1 });
+  const ev = run(g, 60);
+  assert.deepEqual(ev.at(-1).data, { result: 'won', reason: 'dawn_survived' });
+  // 3 đèn × (50 + floor(49)) + 3 lửa × 50
+  assert.equal(g.score, 3 * (50 + 49) + 150);
+  assert.deepEqual([1, 2, 3].map((n) => new Game(T, { night: n }).winNeed), [3, 4, 5]);
+});
+
+test('Ticket-03: bình minh mà thiếu đèn => thua dawn; hết lửa ở tick cuối => no_flames', () => {
+  const g = mk({ lanterns: [{ id: 'L1', lit: true }, { id: 'L2', lit: true }], time_left_s: 1 });
+  assert.deepEqual(run(g, 60).at(-1).data, { result: 'lost', reason: 'dawn' });
+  const lit = ['L1', 'L2', 'L3'].map((id) => ({ id, lit: true }));
+  const g2 = mk({ player: { flames: 1 }, lanterns: lit, shades: [{ pos: [0, 1, 0] }], time_left_s: 1 / 60 });
+  assert.deepEqual(g2.step({}).at(-1).data, { result: 'lost', reason: 'no_flames' });
+});
+
+test('dầu: hao 1/giây, hết dầu => tắt, deposited=0, lantern_out, ever_lit giữ', () => {
+  const g = mk({ lanterns: [{ id: 'L1', lit: true, fuel: 1 }] });
+  run(g, 59);
+  assert.equal(g.snapshot().lanterns[0].fuel, 0);
+  assert.equal(g.lanterns[0].lit, true);
+  const ev = g.step({});
+  assert.deepEqual(ev.find((e) => e.name === 'lantern_out').data, { lantern_id: 'L1' });
+  const l = g.snapshot().lanterns[0];
+  assert.deepEqual([l.lit, l.fuel, l.deposited, l.ever_lit], [false, 0, 0, true]);
+});
+
+test('thắp lại: đèn ever_lit chỉ cần 5, relight=true, +40, relit_count++', () => {
+  const g = mk({ player: { pos: [0, 0, 24], carried: 7 }, lanterns: [{ id: 'L1', lit: false, ever_lit: true }] });
   const ev = g.step({ interact: true });
-  assert.deepEqual(ev.at(-1).data, { result: 'won', reason: 'all_lit' });
-  assert.equal(g.score, 100 + 100 + 0 + 150);
+  assert.deepEqual(ev.map((e) => e.name), ['deposit', 'lantern_lit']);
+  assert.deepEqual(ev[1].data, { lantern_id: 'L1', relight: true });
+  assert.equal(g.score, 5 * 5 + 40);
+  const l = g.snapshot().lanterns[0];
+  assert.deepEqual([l.lit, l.fuel, l.relit_count, g.player.carried], [true, 100, 1, 2]);
+});
+
+test('châm dầu: used = min(mang, ceil((100-fuel)/10)), fuel = min(100, fuel+10×used)', () => {
+  const g = mk({ player: { pos: [0, 0, 24], carried: 9 }, lanterns: [{ id: 'L1', lit: true, fuel: 55.5 }] });
+  const ev = g.step({ interact: true });
+  assert.deepEqual(ev[0], { type: 'event', tick: 1, name: 'refuel', data: { lantern_id: 'L1', amount: 5, fuel: 100 } });
+  assert.equal(g.player.carried, 4);
+  assert.equal(g.score, 25);
+});
+
+test('đèn đầy dầu (fuel = 100) không được chọn khi tương tác', () => {
+  const g = mk({ player: { pos: [0, 0, 24], carried: 3 }, lanterns: [{ id: 'L1', lit: true }] });
+  g.lanterns[0].fuelU = g.FUEL_MAX_U + 1; // sau bước 2 vẫn = 100
+  assert.equal(g.step({ interact: true }).length, 0);
+  assert.equal(g.player.carried, 3);
+});
+
+test('sức chứa = 10 + 2 × successful_lights, tối đa 20', () => {
+  const g = mk({ player: { pos: [0, 0, 24], carried: 10 } });
+  assert.equal(g.snapshot().player.capacity, 10);
+  g.step({ interact: true });
+  assert.equal(g.snapshot().player.capacity, 12);
+  assert.equal(mk({ player: { successful_lights: 9 } }).capacity, 20);
+});
+
+test('fuel < 30 mất vùng an toàn; đúng 30 vẫn còn', () => {
+  const g = mk({ lanterns: [{ id: 'L1', lit: true, fuel: 30 }] });
+  assert.ok(g.hasZone(g.lanterns[0]));
+  g.lanterns[0].fuelU -= 1;
+  assert.ok(!g.hasZone(g.lanterns[0]));
+});
+
+test('Bóng Mực wander tới đèn yếu, hút dầu (drain) 5/giây + hao 1/giây, fuel_drain mỗi 60 tick', () => {
+  const g = mk({ player: { pos: [-30, 0, 0] }, lanterns: [{ id: 'L1', lit: true, fuel: 25 }], shades: [{ id: 'S1', pos: [0, 1, 20], state: 'wander' }] });
+  let drainAt = null;
+  for (let i = 0; i < 200 && drainAt === null; i++) { g.step({}); if (g.shades[0].state === 'drain') drainAt = g.tick; }
+  assert.ok(drainAt !== null);
+  assert.ok(Math.hypot(g.shades[0].pos[0], g.shades[0].pos[2] - 25) <= 2 + 1e-6);
+  const f0 = g.lanterns[0].fuelU;
+  const ev = run(g, 60);
+  assert.equal(f0 - g.lanterns[0].fuelU, 60 * 6);
+  assert.deepEqual(ev.filter((e) => e.name === 'fuel_drain').map((e) => e.data.shade_id), ['S1']);
+});
+
+test('drain -> chase khi Mây vào 6 m; Tỏa Sáng trúng bóng đang drain +15', () => {
+  const g = mk({ player: { pos: [0, 0, 14], carried: 3 }, lanterns: [{ id: 'L1', lit: true, fuel: 20 }],
+    shades: [{ id: 'S1', pos: [0, 1, 23], state: 'drain', target_lantern_id: 'L1' }] });
+  g.step({});
+  assert.equal(g.shades[0].state, 'drain');
+  const g2 = mk({ player: { pos: [0, 0, 19.5], carried: 3 }, lanterns: [{ id: 'L1', lit: true, fuel: 20 }],
+    shades: [{ id: 'S1', pos: [0, 1, 23], state: 'drain', target_lantern_id: 'L1' }] });
+  g2.step({ pulse: true });
+  assert.equal(g2.score, 15);
+  assert.equal(g2.shades[0].state, 'stunned');
+  const g3 = mk({ player: { pos: [0, 0, 18] }, lanterns: [{ id: 'L1', lit: true, fuel: 20 }],
+    shades: [{ id: 'S1', pos: [0, 1, 23], state: 'drain', target_lantern_id: 'L1' }] });
+  g3.step({});
+  assert.equal(g3.shades[0].state, 'chase');
+});
+
+test('châm đèn lên >= 30 khi bóng đang hút => bóng bị đẩy ra mép 6 m trong <= 30 tick, không gây sát thương', () => {
+  const g = mk({ player: { pos: [0, 0, 26.5], carried: 2 }, lanterns: [{ id: 'L1', lit: true, fuel: 20 }],
+    shades: [{ id: 'S1', pos: [0, 1, 24], state: 'drain', target_lantern_id: 'L1' }] });
+  const ev = [...g.step({ interact: true }), ...run(g, 30)];
+  assert.ok(ev.some((e) => e.name === 'refuel'));
+  assert.equal(ev.filter((e) => e.name === 'player_hit').length, 0);
+  assert.ok(Math.hypot(g.shades[0].pos[0], g.shades[0].pos[2] - 25) >= 6 - 1e-6);
+  assert.notEqual(g.shades[0].state, 'drain');
+});
+
+test('hết choáng thì về wander (Ticket-03)', () => {
+  const g = mk({ player: { carried: 3 }, shades: [{ id: 'S1', pos: [3, 1, 0] }] });
+  g.step({ pulse: true });
+  run(g, 119);
+  assert.equal(g.shades[0].state, 'stunned');
+  g.player.pos = [-30, 0, 0]; // Mây ở xa (> 12 m) để wander không chuyển ngay sang chase
+  g.step({});
+  assert.equal(g.shades[0].state, 'wander');
 });
 
 test('hết giờ => thua dawn', () => {

@@ -22,3 +22,12 @@
   - Hai lần sinh code Python→JS bị lỗi escape `\n` thành xuống dòng thật trong `proof.js` (bắt bởi lỗi cú pháp khi chạy). Sửa tay bằng Edit.
 - **Chưa kiểm được:** bản web Phase 2 chưa được xem/chụp và chưa đo FPS, vì bật server cần người dùng cho phép.
 - **Token ước tính Phase 2:** ~220k đầu vào (11 ảnh ticket + ngữ cảnh dài) + ~60k đầu ra. Tiết kiệm: không dùng subagent; viết test headless trước khi làm UI; chạy test bằng một lệnh; không đọc lại file lớn khi không cần.
+
+## Phase 3 (2026-11-20, 30 phút)
+- **Đầu vào:** 7 ảnh Ticket-03 (Change Request) + contract v1.2. Luật người dùng giữ nguyên (không tự commit, chỉ chạy test).
+- **Cách làm:** patch có kiểm tra (script dừng nếu không tìm thấy đoạn cần thay) vào `game.js`, rồi chạy test cũ để thấy đúng những test bị luật mới thay thế (6 test đỏ, đều do luật bị THAY THẾ), sửa/xóa có ghi lý do, thêm test + 4 scenario mới. Viết ADR + CHANGELOG.
+- **AI sai / suýt sai:**
+  - Test châm dầu ban đầu giả định đèn vừa đặt `fuel: 100` là "đầy" ở tick đầu, nhưng hao ở bước 2 xảy ra trước bước tương tác nên còn 99.98 → được châm. Code đúng theo thứ tự tick; test sai, đã sửa và tách test "đèn đầy".
+  - Test "hết choáng về wander" bỏ sót rằng bước 8 cùng tick chuyển `wander` → `chase` nếu Mây ≤ 12 m. Đã sửa test (đưa Mây ra xa).
+  - Scenario `win_last_lantern` cũ (time_left 120 s) sẽ thua vì đèn đặt sẵn hết dầu sau 100 s. Đổi time_left 60 s, ghi lý do.
+- **Token ước tính Phase 3:** ~120k đầu vào + ~30k đầu ra. Tiết kiệm: patch theo đoạn thay vì viết lại file, chỉ đọc lại đúng đoạn cần.

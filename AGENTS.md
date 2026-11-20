@@ -1,6 +1,6 @@
 # AGENTS.md — Đảo Đèn Lồng
 
-Game 3D web (Three.js), 3 Đêm, + chế độ headless theo Test Contract (hiện tại **v1.1**, Ticket-02).
+Game 3D web (Three.js), 3 Đêm, + chế độ headless theo Test Contract (hiện tại **v1.2**, Ticket-03 "Đèn cạn dầu").
 
 ## Lệnh
 - Cài: `npm install` · Chạy web: `npm start` (http://localhost:8080)
@@ -19,6 +19,8 @@ Game 3D web (Three.js), 3 Đêm, + chế độ headless theo Test Contract (hi�
 - Dựng scenario không phát sự kiện/không cộng điểm; lanterns cập nhật theo id.
 - File inputs/scenario sai → exit 2. Dòng cuối luôn là `end`. Cùng seed → output giống hệt.
 - v1.1: thứ tự tick theo Ticket-02 (pause trước → bộ đếm → di chuyển/rơi → nhặt → đèn → vùng an toàn → pulse → bóng/Gió Lạc → va chạm → sinh → thắng/thua → snapshot). Trạng thái bóng: spawning/wander/chase/recoil/stunned.
+- v1.2: đèn có dầu (đơn vị nguyên 1/60 = `fuelU`), có thể tắt/thắp lại/châm dầu; bóng có trạng thái `drain`; thắng ở bình minh (`dawn_survived`). Xem `docs/adr/001-*.md`.
+- Ticket đổi luật: ghi ADR + `CHANGELOG.md`; test cũ bị thay thế phải sửa/xóa KÈM lý do (comment trong test), không skip.
 - Số chuẩn KHÔNG được tự đổi (ticket bắt buộc). Bảng màu ở `web/style.css` và `C` trong `main.js`.
 - Mỗi tính năng mới cần ≥ 1 scenario trong `tests/scenarios/` + test trong `tests/headless.test.js`.
 - Sáng tạo thêm chỉ ở `src/web` (hiển thị), không đổi output headless.

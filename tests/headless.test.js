@@ -65,12 +65,14 @@ test('game kết thúc trước --ticks thì dừng, end.ticks = số bước đ
   assert.deepEqual(r.lines.find((l) => l.name === 'game_over'), { type: 'event', tick: 30, name: 'game_over', data: { result: 'lost', reason: 'dawn' } });
 });
 
-test('kịch bản thắng trọn vẹn từ file', () => {
-  const r = headless(['--ticks', '2000', '--scenario', path.join(SC, 'win_last_lantern.scenario.json'),
+// Sửa theo Ticket-03: trước đây thắp đèn cuối là thắng ngay; nay KHÔNG thắng sớm, phải sống tới bình minh.
+test('kịch bản thắp đèn cuối từ file: không thắng sớm, thắng ở bình minh (dawn_survived)', () => {
+  const r = headless(['--ticks', '4000', '--scenario', path.join(SC, 'win_last_lantern.scenario.json'),
     '--inputs', path.join(SC, 'win_last_lantern.inputs.json')]);
-  const end = r.lines.at(-1);
-  assert.equal(end.state, 'won');
-  assert.ok(r.lines.some((l) => l.name === 'lantern_lit' && l.data.lantern_id === 'L1'));
+  assert.ok(r.lines.some((l) => l.name === 'lantern_lit' && l.data.lantern_id === 'L1' && l.data.relight === false));
+  const over = r.lines.find((l) => l.name === 'game_over');
+  assert.deepEqual(over.data, { result: 'won', reason: 'dawn_survived' });
+  assert.ok(over.tick > 231);
 });
 
 // ---------------- Phase 2: mỗi tính năng mới có ít nhất 1 scenario headless ----------------
@@ -78,11 +80,12 @@ const p2 = (name, night, ticks, extra = []) => headless(['--seed', '1', '--night
   '--scenario', path.join(SC, `${name}.scenario.json`), '--inputs', path.join(SC, `${name}.inputs.json`), ...extra]);
 const evs = (r, name) => r.lines.filter((l) => l.type === 'event' && l.name === name);
 
-test('v1.1 snapshot có đủ trường mới, night_start ở đầu', () => {
+test('v1.1/v1.2 snapshot có đủ trường mới, night_start ở đầu', () => {
   const r = headless(['--seed', '2', '--night', '2', '--ticks', '10']);
   const s = r.lines[0];
   for (const k of ['night', 'wind', 'motes', 'drifters', 'charms']) assert.ok(k in s, k);
-  for (const k of ['vel', 'grounded', 'invuln', 'dash_cd_s', 'pulse_cd_s', 'charm_s']) assert.ok(k in s.player, k);
+  for (const k of ['vel', 'grounded', 'invuln', 'dash_cd_s', 'pulse_cd_s', 'charm_s', 'capacity']) assert.ok(k in s.player, k);
+  for (const k of ['fuel', 'ever_lit', 'relit_count']) assert.ok(k in s.lanterns[0], k);
   assert.deepEqual(r.lines[1], { type: 'event', tick: 0, name: 'night_start', data: { night: 2 } });
   assert.equal(headless(['--night', '4', '--ticks', '1']).code !== 0, true);
 });
@@ -169,4 +172,31 @@ test('hiệu năng: chạy trọn một Đêm 21.600 tick <= 30 s', () => {
   const r = headless(['--seed', '9', '--night', '3', '--ticks', '21600']);
   assert.equal(r.code, 0);
   assert.ok(Date.now() - t0 < 30000);
+});
+
+// ---------------- Phase 3: scenario headless cho luật mới ----------------
+test('scenario p3_fuel_out: đèn hết dầu => lantern_out, thắp lại cần 5 (relight)', () => {
+  const r = p2('p3_fuel_out', 1, 200);
+  assert.deepEqual(evs(r, 'lantern_out').map((e) => e.data), [{ lantern_id: 'L1' }]);
+  assert.deepEqual(evs(r, 'lantern_lit').map((e) => e.data), [{ lantern_id: 'L1', relight: true }]);
+  assert.equal(evs(r, 'deposit')[0].data.amount, 5);
+});
+
+test('scenario p3_refuel: châm dầu đèn đang sáng', () => {
+  const r = p2('p3_refuel', 1, 10);
+  assert.deepEqual(evs(r, 'refuel')[0].data, { lantern_id: 'L1', amount: 4, fuel: 100 });
+});
+
+test('scenario p3_drain: Bóng Mực tới đèn yếu, drain, fuel_drain mỗi 60 tick', () => {
+  const r = p2('p3_drain', 1, 400, ['--snapshot-every', '400']);
+  const fd = evs(r, 'fuel_drain');
+  assert.ok(fd.length >= 2);
+  assert.equal(fd[1].tick - fd[0].tick, 60);
+  assert.ok(r.lines.some((l) => l.type === 'snapshot' && l.shades.some((s) => s.state === 'drain')) || fd.length > 0);
+});
+
+test('scenario p3_dawn_win: sống tới bình minh với 3/5 đèn => dawn_survived', () => {
+  const r = p2('p3_dawn_win', 1, 200);
+  assert.deepEqual(evs(r, 'game_over')[0].data, { result: 'won', reason: 'dawn_survived' });
+  assert.equal(r.lines.at(-1).state, 'won');
 });
