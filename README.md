@@ -9,7 +9,7 @@ Game 3D góc nhìn thứ ba chạy trên **trình duyệt** (Three.js). Mây —
 ```bash
 git clone https://github.com/pgb4work-ai-vinuni/K5-L3A-DAY12-PhanGiaBao-2A202603562-AI-SDLC-Dao-Den-Long.git && cd K5-L3A-DAY12-PhanGiaBao-2A202603562-AI-SDLC-Dao-Den-Long
 npm install
-npm start          # mở http://localhost:8080
+npm start          # mở http://localhost:8080 (cổng bận thì tự sang 8081…, hoặc PORT=9000 npm start)
 ```
 
 ## Điều khiển

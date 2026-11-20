@@ -13,7 +13,7 @@ const MIME = {
 };
 const ALLOWED = ['/index.html', '/game.contract.json', '/src/', '/node_modules/three/build/', '/web/'];
 
-http.createServer((req, res) => {
+const server = http.createServer((req, res) => {
   let url = decodeURIComponent(new URL(req.url, 'http://x').pathname);
   if (url === '/') url = '/index.html';
   const file = path.normalize(path.join(ROOT, url));
@@ -23,4 +23,18 @@ http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-cache' });
     res.end(data);
   });
-}).listen(PORT, () => console.log(`Đảo Đèn Lồng: mở http://localhost:${PORT}`));
+});
+
+// Cổng mặc định 8080 (đổi bằng biến PORT). Nếu bận thì tự thử cổng kế tiếp (tối đa 10 lần).
+let port = PORT;
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE' && port < PORT + 10) {
+    console.warn(`Cổng ${port} đang bận, thử cổng ${port + 1}...`);
+    server.listen(++port);
+  } else {
+    console.error(`Không mở được server: ${err.message}. Thử: PORT=9000 npm start`);
+    process.exit(1);
+  }
+});
+server.on('listening', () => console.log(`Đảo Đèn Lồng: mở http://localhost:${port}`));
+server.listen(port);
