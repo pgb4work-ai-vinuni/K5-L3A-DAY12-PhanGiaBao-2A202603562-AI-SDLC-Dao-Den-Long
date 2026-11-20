@@ -23,6 +23,8 @@
     <div id="hint"></div>
     <div id="wind-warn" class="hidden">🍃 Gió mạnh sắp tới!</div>
     <div id="arrow">➤</div>
+    <div id="shade-arrow">➤</div>
+    <div id="captions" aria-live="polite"></div>
     <div id="fps"></div>
   </div>
   <div id="flash"></div>
@@ -32,9 +34,10 @@
       <h1>Đảo Đèn Lồng</h1>
       <p class="sub">Ba đêm, ba hòn đảo, một chiếc đèn nhỏ.</p>
       <button data-act="play">Chơi</button>
+      <button data-act="leaderboard" class="ghost">Bảng xếp hạng</button>
       <button data-act="settings" class="ghost">Cài đặt</button>
       <ul class="keys">
-        <li><b>W A S D</b> di chuyển · <b>Space</b> nhảy · <b>Shift</b> lướt</li>
+        <li><b>W A S D</b> di chuyển · <b>Space</b> nhảy · <b>Shift</b> lướt (đổi phím trong Cài đặt)</li>
         <li><b>Kéo chuột</b> / <b>← →</b> xoay camera</li>
         <li><b>E</b> nạp / thắp lại / châm dầu · <b>F</b> tỏa sáng · <b>Esc / P</b> tạm dừng</li>
         <li>Đèn cạn dầu dần! Giữ đủ đèn sáng tới <b>bình minh</b> để thắng.</li>
@@ -56,6 +59,7 @@
       <h1 id="res-title"></h1>
       <p class="sub" id="res-sub"></p>
       <p id="res-body"></p>
+      <div class="entry hidden" id="res-entry"><input maxlength="12" placeholder="Tên của bạn" /><button data-act="save-score">Lưu điểm</button><p class="err"></p></div>
       <button data-act="next" id="res-next">Đêm kế tiếp</button>
       <button data-act="retry" id="res-retry">Chơi lại Đêm này</button>
       <button data-act="menu" class="ghost">Về menu</button>
@@ -67,6 +71,7 @@
       <h1>Bình Minh</h1>
       <p class="sub">Ba hòn đảo đã sáng lại.</p>
       <p>Tổng điểm: <b id="dawn-score">0</b></p>
+      <div class="entry hidden" id="dawn-entry"><input maxlength="12" placeholder="Tên của bạn" /><button data-act="save-score">Lưu điểm</button><p class="err"></p></div>
       <button data-act="menu">Về menu</button>
     </div>
   </div>
@@ -87,9 +92,25 @@
       <label>Âm lượng <input id="set-vol" type="range" min="0" max="1" step="0.05" /></label>
       <label>Độ nhạy chuột <input id="set-sens" type="range" min="0.05" max="1" step="0.05" /></label>
       <label>Bảng màu dễ phân biệt <input id="set-cb" type="checkbox" /></label>
+      <label>Phụ đề / chỉ báo hình ảnh <input id="set-cap" type="checkbox" /></label>
+      <label>Giảm chuyển động (tắt chớp màn hình) <input id="set-rm" type="checkbox" /></label>
+      <label>Chữ lớn (×1.25) <input id="set-lt" type="checkbox" /></label>
+      <h2>Phím</h2>
+      <div id="keys-list"></div>
+      <p id="keys-warn" class="err"></p>
+      <button data-act="keys-reset" class="ghost">Khôi phục mặc định</button>
       <button data-act="settings-back">Xong</button>
     </div>
   </div>
+
+  <div id="leaderboard" class="screen hidden">
+    <div class="card">
+      <h1>Bảng xếp hạng</h1>
+      <table><thead><tr><th>#</th><th>Tên</th><th>Điểm</th><th>Đêm</th><th>Ngày</th></tr></thead><tbody id="lb-list"></tbody></table>
+      <button data-act="menu">Về menu</button>
+    </div>
+  </div>
+  <pre id="bench-out" class="hidden"></pre>
 
   <script type="module" src="/src/web/main.js"></script>
 </body>

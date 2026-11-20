@@ -66,6 +66,8 @@ export class Game {
     this.randomDrifters = this.map.drifters;
     this.windEnabled = this.map.wind;
     this.prevButtons = { jump: false, interact: false, pulse: false, dash: false, pause: false };
+    // Cảnh benchmark (Ticket-04): tắt sinh thêm, sát thương, nhặt, hao dầu, điều kiện kết thúc.
+    this.bench = !!opts.bench;
     this.applyScenario(opts.scenario || {});
   }
 
@@ -258,7 +260,7 @@ export class Game {
     }
     if (this.wind.active && --this.wind.ticks <= 0) this.wind.active = false;
     // Dầu: hao 1/60 mỗi tick + mỗi Bóng Mực đang hút 5/60 mỗi tick
-    const decayU = Math.round(t.fuel_decay_per_s), drainU = Math.round(t.drain_per_s);
+    const decayU = this.bench ? 0 : Math.round(t.fuel_decay_per_s), drainU = this.bench ? 0 : Math.round(t.drain_per_s);
     for (const l of this.lanterns) if (l.lit) l.fuelU -= decayU;
     for (const s of [...this.shades].sort(byId)) {
       if (s.state !== 'drain') continue;
@@ -279,7 +281,7 @@ export class Game {
     if (p.respawnTicks === 0) this.movePlayer(input, btn, emit);
 
     // 4. Nhặt đom đóm và bùa
-    if (p.respawnTicks === 0) {
+    if (p.respawnTicks === 0 && !this.bench) {
       const keep = [];
       for (const m of this.motes) {
         if (p.carried < this.capacity && distXZ(p.pos, m.pos) <= t.pickup_radius + EPS &&
@@ -387,7 +389,7 @@ export class Game {
     this.moveDrifters();
 
     // 9. Va chạm: Gió Lạc cướp trước, rồi Bóng Mực (theo id tăng dần)
-    if (p.respawnTicks === 0) {
+    if (p.respawnTicks === 0 && !this.bench) {
       for (const d of [...this.drifters].sort(byId)) {
         if (d.state !== 'chase' || distXZ(d.pos, p.pos) > W.DRIFTER_HIT_R + EPS) continue;
         const amount = Math.min(W.DRIFTER_STEAL, p.carried);
@@ -414,10 +416,11 @@ export class Game {
     }
 
     // 10. Sinh theo lịch (thực thể mới chỉ tương tác từ tick sau)
-    this.spawnScheduled(emit);
+    if (!this.bench) this.spawnScheduled(emit);
 
     // 11. Thắng / thua
     this.tick++;
+    if (this.bench) { this.timeLeftTicks++; return events; } // bench: không hết giờ, không kết thúc
     // Ticket-03: không còn thắng sớm; xét ở bình minh, hết Ngọn Lửa luôn thua trước.
     if (p.flames <= 0) this.finish('lost', 'no_flames', emit);
     else if (this.timeLeftTicks <= 0) {

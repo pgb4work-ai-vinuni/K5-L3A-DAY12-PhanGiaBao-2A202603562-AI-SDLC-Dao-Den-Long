@@ -31,3 +31,9 @@
   - Test "hết choáng về wander" bỏ sót rằng bước 8 cùng tick chuyển `wander` → `chase` nếu Mây ≤ 12 m. Đã sửa test (đưa Mây ra xa).
   - Scenario `win_last_lantern` cũ (time_left 120 s) sẽ thua vì đèn đặt sẵn hết dầu sau 100 s. Đổi time_left 60 s, ghi lý do.
 - **Token ước tính Phase 3:** ~120k đầu vào + ~30k đầu ra. Tiết kiệm: patch theo đoạn thay vì viết lại file, chỉ đọc lại đúng đoạn cần.
+
+## Phase 4 (2026-11-20)
+- **Đầu vào:** 7 ảnh Ticket-04 + contract v1.3.
+- **Cách làm:** soak (Node thuần) → cảnh bench trong core (`src/core/bench.js`, có test) → script bench mở trình duyệt mặc định và nhận kết quả qua server tạm → bảng xếp hạng lưu đĩa (`scripts/leaderboard.js`, có test + lệnh xuất) → accessibility trong `src/web` → đóng gói `npm run dist`, tài liệu, retro.
+- **AI sai / suýt sai:** soak đo RSS vượt 1.2× dù heap JS phẳng — đo riêng heap để chứng minh không rò rỉ rồi dùng `--expose-gc --jitless` và ghi giả định thay vì "làm đẹp" số.
+- **Token ước tính Phase 4:** ~150k vào + ~45k ra. Tổng dự án xem `docs/notes/retro.md`.

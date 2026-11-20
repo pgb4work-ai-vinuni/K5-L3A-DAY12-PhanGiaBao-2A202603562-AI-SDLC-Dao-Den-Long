@@ -13,9 +13,10 @@ const mk = (extra, night = 1, seed = 1) => new Game(T, { seed, night, scenario: 
 const run = (g, n, input = {}) => { const ev = []; for (let i = 0; i < n; i++) ev.push(...g.step(input)); return ev; };
 const near = (a, b, e = 1e-6) => assert.ok(Math.abs(a - b) <= e, `${a} != ${b}`);
 
-test('contract v1.2: tuning = số chuẩn Ticket-02 + Ticket-03', () => {
+test('contract v1.3: bench_cmd/soak_cmd + tuning = số chuẩn Ticket-02 + Ticket-03', () => {
   const c = JSON.parse(fs.readFileSync(new URL('../game.contract.json', import.meta.url)));
-  assert.equal(c.contract_version, '1.2');
+  assert.equal(c.contract_version, '1.3');
+  assert.ok(c.bench_cmd && c.soak_cmd && c.run_cmd && c.headless_cmd);
   assert.deepEqual([T.fuel_max, T.fuel_decay_per_s, T.fuel_per_mote, T.relight_cost, T.win_ratio, T.drain_per_s, T.low_fuel_threshold, T.capacity_max],
     [100, 1, 10, 5, 0.6, 5, 30, 20]);
   assert.deepEqual([T.player_speed, T.carry_capacity, T.lantern_cost, T.pickup_radius, T.interact_radius],

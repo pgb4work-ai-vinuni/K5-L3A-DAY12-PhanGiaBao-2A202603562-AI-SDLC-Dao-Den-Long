@@ -1,5 +1,17 @@
 # Changelog
 
+## [phase-4] / v1.0.0 — Ticket-04 "Bình minh: phát hành v1.0.0" (contract v1.3)
+### Thêm
+- **Benchmark** `node scripts/bench.js --seed 42 --duration 30 --out bench.json` (`npm run bench`): cảnh chuẩn Đêm 1, 200 Bóng Mực wander, 100 đom đóm, L1–L3 sáng; camera bay vòng r30/Y15/15 s; canvas 1280×720; khởi động 3 s rồi đo; ghi `avg_fps`, `p1_low_fps`, `frame_ms_p95`, `frames`, `load_ms`.
+- **Soak test** `node --expose-gc --jitless src/soak.js --seed 7 --nights 10 --out soak.json` (`npm run soak`).
+- **Bảng xếp hạng cục bộ** (top 10, lưu `data/leaderboard.json`), nhập tên sau Bình Minh hoặc khi thua, màn hình từ menu chính, lệnh `node scripts/serve.js --export-leaderboard out.json`.
+- **Dễ tiếp cận**: đổi phím mọi hành động (báo trùng phím, khôi phục mặc định, được lưu); phụ đề/chỉ báo hình ảnh (Bóng Mực xuất hiện + mũi tên ở mép màn hình, gió sắp thổi, 10 s cuối, đèn sắp hết dầu); giảm chuyển động (tắt chớp màn hình); chữ tối thiểu 18 px, tùy chọn chữ lớn ×1.25.
+- **Đóng gói**: `npm run dist` tạo bản web tĩnh `dist/dao-den-long-v1.0.0/` cho GitHub Release.
+### Thay đổi
+- `contract_version` 1.2 → **1.3**, thêm `bench_cmd`, `soak_cmd`. `run_cmd` đổi từ `npm start` sang `node scripts/serve.js` (để nhận tham số `--export-leaderboard` trực tiếp; `npm start` vẫn chạy được).
+- Server tách thành `scripts/server-core.js` (dùng chung cho game và benchmark).
+- Mọi luật/số liệu v1.0–v1.2 giữ nguyên; không có test cũ nào bị đổi.
+
 ## [phase-3] — Ticket-03 "Đèn cạn dầu" (contract v1.2)
 ### Breaking changes
 - `contract_version` 1.1 → **1.2**. `tuning` thêm `fuel_max`, `fuel_decay_per_s`, `fuel_per_mote`, `relight_cost`, `win_ratio`, `drain_per_s`, `low_fuel_threshold`, `capacity_max`; `score` thêm `per_relight`, `per_stun_drain`, `per_lit_lantern_dawn`.

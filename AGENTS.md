@@ -1,12 +1,14 @@
 # AGENTS.md — Đảo Đèn Lồng
 
-Game 3D web (Three.js), 3 Đêm, + chế độ headless theo Test Contract (hiện tại **v1.2**, Ticket-03 "Đèn cạn dầu").
+Game 3D web (Three.js), 3 Đêm, + chế độ headless theo Test Contract (hiện tại **v1.3**, Ticket-04 phát hành v1.0.0).
 
 ## Lệnh
 - Cài: `npm install` · Chạy web: `npm start` (http://localhost:8080)
 - Test: `npm test` (node:test, phải xanh trước khi kết thúc — có Stop hook chặn)
 - Headless: `node src/headless.js --seed 1 --night 1|2|3 --ticks 600 --out out.jsonl [--scenario f] [--inputs f] [--snapshot-every 10]`
 - Bằng chứng: `npm run proof -- phase-N` (skill `.claude/skills/verify`)
+- Soak: `npm run soak` (ghi soak.json) · Bench: `npm run bench` (mở trình duyệt, ghi bench.json — HỎI người dùng trước) · Đóng gói: `npm run dist`
+- Bảng xếp hạng: `node scripts/serve.js --export-leaderboard out.json` (dữ liệu ở `data/`, không commit)
 
 ## Kiến trúc
 - `src/core/` logic thuần, KHÔNG import DOM/three. `game.js` (luật, thứ tự 12 bước), `maps.js` (bản đồ chuẩn 3 Đêm), `io.js` (đọc inputs/scenario), `world.js` (hằng số chuẩn ngoài contract), `rng.js` (PRNG tất định).
