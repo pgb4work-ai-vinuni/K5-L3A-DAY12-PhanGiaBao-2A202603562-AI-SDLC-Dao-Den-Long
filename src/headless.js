@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Chế độ headless theo Test Contract v1.0.
+// Chế độ headless theo Test Contract v1.1.
 // node src/headless.js --seed <int> --night 1 [--scenario f.json] [--inputs f.json]
 //                      --ticks <int> --out <f.jsonl> [--snapshot-every <int>]
 import fs from 'node:fs';
@@ -34,7 +34,7 @@ function parseArgs(argv) {
     }
   }
   if (a.ticks === undefined || a.ticks < 0) fail('cần --ticks <int> >= 0', 1);
-  if (a.night !== 1) fail('chỉ hỗ trợ --night 1 ở contract v1.0', 1);
+  if (![1, 2, 3].includes(a.night)) fail('--night phải là 1, 2 hoặc 3', 1);
   if (a.snapshotEvery <= 0) fail('--snapshot-every phải > 0', 1);
   return a;
 }
@@ -59,11 +59,12 @@ try {
   timeline = new InputTimeline(args.inputs ? readJson(args.inputs, 'inputs') : { frames: [] });
 } catch (e) { fail(`inputs sai định dạng: ${e.message}`, 2); }
 
-const game = new Game(contract.tuning, { seed: args.seed, scenario });
+const game = new Game(contract.tuning, { seed: args.seed, night: args.night, scenario });
 const lines = [];
 const out = (o) => lines.push(JSON.stringify(o));
 
 out(game.snapshot());
+for (const ev of game.startEvents()) out(ev);
 for (let k = 0; k < args.ticks && game.state === 'playing'; k++) {
   for (const ev of game.step(timeline.at(k))) out(ev);
   if (game.tick % args.snapshotEvery === 0) out(game.snapshot());

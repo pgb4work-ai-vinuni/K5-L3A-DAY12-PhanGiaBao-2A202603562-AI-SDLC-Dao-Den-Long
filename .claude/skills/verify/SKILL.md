@@ -4,8 +4,8 @@ description: Chạy toàn bộ kiểm chứng của Đảo Đèn Lồng (unit te
 ---
 
 1. `npm test` — phải 0 fail. Nếu đỏ: sửa code, KHÔNG sửa test cho xanh trừ khi yêu cầu đổi (ghi lý do).
-2. `npm run proof -- phase-N` — chạy scenario trong `tests/scenarios/`, kiểm tra tất định seed 42, kiểm tra mã thoát 2.
+2. `npm run proof -- phase-N` — chạy MỌI scenario trong `tests/scenarios/` (đêm theo bảng NIGHT trong scripts/proof.js), tất định seed 42 cả 3 Đêm, hiệu năng 1 Đêm đầy đủ (≤ 30 s), mã thoát 2.
 3. `npm test > docs/proof/phase-N/npm-test.txt 2>&1` — lưu báo cáo test.
-4. Ảnh bản web: `npm start`, mở http://localhost:8080, chụp màn hình lưu vào `docs/proof/phase-N/`.
+4. Ảnh bản web: HỎI người dùng trước khi bật server (`npm start`); tắt server sau khi chụp. Lưu ảnh vào `docs/proof/phase-N/`. FPS đọc ở góc dưới trái hoặc `window.__fps`.
 5. Cập nhật bảng truy vết trong `docs/proof/phase-N/README.md` (yêu cầu → cách kiểm → bằng chứng → kết quả). Ghi "chưa đạt" trung thực.
 Không bao giờ sửa tay file .jsonl output.

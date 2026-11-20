@@ -10,30 +10,85 @@
   </script>
 </head>
 <body>
-  <div id="hud">
-    <div class="row"><span class="lbl">Ngọn lửa</span><span id="flames"></span></div>
-    <div class="row"><span class="lbl">Đom đóm</span><span id="carried"></span></div>
-    <div class="row"><span class="lbl">Đèn lồng</span><span id="lanterns"></span></div>
-    <div class="row"><span class="lbl">Thời gian</span><span id="time"></span></div>
-    <div class="row"><span class="lbl">Điểm</span><span id="score"></span></div>
-    <div class="row"><span class="lbl">Tỏa sáng</span><span id="pulse"></span></div>
+  <div id="hud" class="hidden">
+    <div id="flames" class="tl"></div>
+    <div id="clock" class="tc">5:00</div>
+    <div class="tr"><div id="lanterns">0/5</div><div id="score">0</div></div>
+    <div id="bar" class="bc"></div>
+    <div class="br">
+      <div class="cd" id="cd-dash"><span>Lướt</span><i></i><b>Shift</b></div>
+      <div class="cd" id="cd-pulse"><span>Tỏa Sáng</span><i></i><b>F</b></div>
+    </div>
+    <div id="charm" class="hidden">Bùa Gió <span></span></div>
+    <div id="hint"></div>
+    <div id="wind-warn" class="hidden">🍃 Gió mạnh sắp tới!</div>
+    <div id="arrow">➤</div>
+    <div id="fps"></div>
   </div>
-  <div id="hint"></div>
   <div id="flash"></div>
-  <div id="overlay">
+
+  <div id="menu" class="screen">
     <div class="card">
-      <h1 id="ov-title">Đảo Đèn Lồng</h1>
-      <p id="ov-sub">Đêm 1 · Đảo Bến</p>
-      <p id="ov-body">Gom đom đóm, nạp vào 5 Đèn Lồng Lớn trước bình minh. Né Bóng Mực!</p>
+      <h1>Đảo Đèn Lồng</h1>
+      <p class="sub">Ba đêm, ba hòn đảo, một chiếc đèn nhỏ.</p>
+      <button data-act="play">Chơi</button>
+      <button data-act="settings" class="ghost">Cài đặt</button>
       <ul class="keys">
-        <li><b>W A S D</b> di chuyển · <b>Space</b> nhảy</li>
-        <li><b>Kéo chuột</b> hoặc <b>← →</b> xoay camera</li>
-        <li><b>E</b> nạp ánh sáng vào đèn · <b>F</b> tỏa sáng xua Bóng Mực</li>
-        <li><b>R</b> chơi lại</li>
+        <li><b>W A S D</b> di chuyển · <b>Space</b> nhảy · <b>Shift</b> lướt</li>
+        <li><b>Kéo chuột</b> / <b>← →</b> xoay camera</li>
+        <li><b>E</b> nạp ánh sáng · <b>F</b> tỏa sáng · <b>Esc / P</b> tạm dừng</li>
       </ul>
-      <button id="ov-btn">Bắt đầu</button>
     </div>
   </div>
+
+  <div id="intro" class="screen hidden">
+    <div class="card">
+      <p class="sub" id="intro-night">Đêm 1</p>
+      <h1 id="intro-name">Đảo Bến</h1>
+      <p class="quote" id="intro-quote"></p>
+      <button data-act="start-night">Bắt đầu</button>
+    </div>
+  </div>
+
+  <div id="result" class="screen hidden">
+    <div class="card">
+      <h1 id="res-title"></h1>
+      <p class="sub" id="res-sub"></p>
+      <p id="res-body"></p>
+      <button data-act="next" id="res-next">Đêm kế tiếp</button>
+      <button data-act="retry" id="res-retry">Chơi lại Đêm này</button>
+      <button data-act="menu" class="ghost">Về menu</button>
+    </div>
+  </div>
+
+  <div id="dawn" class="screen hidden">
+    <div class="card">
+      <h1>Bình Minh</h1>
+      <p class="sub">Ba hòn đảo đã sáng lại.</p>
+      <p>Tổng điểm: <b id="dawn-score">0</b></p>
+      <button data-act="menu">Về menu</button>
+    </div>
+  </div>
+
+  <div id="pause" class="screen hidden">
+    <div class="card">
+      <h1>Tạm dừng</h1>
+      <button data-act="resume">Tiếp tục</button>
+      <button data-act="retry">Chơi lại Đêm</button>
+      <button data-act="settings" class="ghost">Cài đặt</button>
+      <button data-act="menu" class="ghost">Về menu</button>
+    </div>
+  </div>
+
+  <div id="settings" class="screen hidden">
+    <div class="card">
+      <h1>Cài đặt</h1>
+      <label>Âm lượng <input id="set-vol" type="range" min="0" max="1" step="0.05" /></label>
+      <label>Độ nhạy chuột <input id="set-sens" type="range" min="0.05" max="1" step="0.05" /></label>
+      <button data-act="settings-back">Xong</button>
+    </div>
+  </div>
+
   <script type="module" src="/src/web/main.js"></script>
 </body>
 </html>

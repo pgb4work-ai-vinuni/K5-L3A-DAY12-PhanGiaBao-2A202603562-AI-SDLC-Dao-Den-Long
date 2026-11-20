@@ -11,3 +11,14 @@
   - Nguy cơ lệch so sánh `≤ r` do cộng dồn 0.1 → thêm dung sai 1e-6.
 - **Harness thêm:** AGENTS.md (+CLAUDE.md trỏ tới), skill `verify`, Stop hook chặn kết thúc khi `npm test` đỏ, CI GitHub Actions.
 - **Token ước tính:** ~150k token đầu vào (phần lớn là đọc 10 ảnh + docs) + ~35k token đầu ra. Tiết kiệm: đọc docs 1 lần, không dùng subagent, viết test headless trước để không phải chạy thử game nhiều lần, chụp ảnh ở độ phân giải 0.6.
+
+## Phase 2 (2026-11-20)
+- **Đầu vào:** 11 ảnh Ticket-02 + Test Contract v1.1. Người dùng thêm luật: không tự commit; không chạy lệnh ảnh hưởng hệ thống/tiến trình khi chưa hỏi; chỉ chạy lệnh test.
+- **Cách làm:** viết `maps.js` (bản đồ chuẩn) + viết lại `game.js` theo thứ tự 12 bước, rồi test core (28) + scenario headless cho từng tính năng (19 test), sau đó mới làm UI web.
+- **AI sai / suýt sai:**
+  - Ở Phase 1, server do agent bật để chụp ảnh không được tắt, giữ cổng 8080 và làm `npm start` của người dùng lỗi EADDRINUSE. Đã sửa: `serve.js` tự thử cổng kế tiếp; đưa vào AGENTS.md và skill `verify` luật "hỏi trước khi bật server, tắt sau khi dùng".
+  - Kịch bản test `p2_pause` ban đầu hiểu sai: nhấn pause lần hai là **tiếp tục** (toggle), không phải tạm dừng lần nữa. Test sai, code đúng; đã sửa test.
+  - Kịch bản `p2_drifter` đặt Gió Lạc quá xa nên pulse trúng lúc nó còn `chase` (flee không cướp), không kiểm được luật "thả lại". Đã dời vị trí để kiểm đúng luật.
+  - Hai lần sinh code Python→JS bị lỗi escape `\n` thành xuống dòng thật trong `proof.js` (bắt bởi lỗi cú pháp khi chạy). Sửa tay bằng Edit.
+- **Chưa kiểm được:** bản web Phase 2 chưa được xem/chụp và chưa đo FPS, vì bật server cần người dùng cho phép.
+- **Token ước tính Phase 2:** ~220k đầu vào (11 ảnh ticket + ngữ cảnh dài) + ~60k đầu ra. Tiết kiệm: không dùng subagent; viết test headless trước khi làm UI; chạy test bằng một lệnh; không đọc lại file lớn khi không cần.
