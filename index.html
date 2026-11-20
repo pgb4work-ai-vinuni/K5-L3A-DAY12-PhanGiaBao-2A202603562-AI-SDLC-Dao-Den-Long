@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Đảo Đèn Lồng</title>
+  <link rel="stylesheet" href="/web/style.css" />
+  <script type="importmap">
+    { "imports": { "three": "/node_modules/three/build/three.module.js" } }
+  </script>
+</head>
+<body>
+  <div id="hud">
+    <div class="row"><span class="lbl">Ngọn lửa</span><span id="flames"></span></div>
+    <div class="row"><span class="lbl">Đom đóm</span><span id="carried"></span></div>
+    <div class="row"><span class="lbl">Đèn lồng</span><span id="lanterns"></span></div>
+    <div class="row"><span class="lbl">Thời gian</span><span id="time"></span></div>
+    <div class="row"><span class="lbl">Điểm</span><span id="score"></span></div>
+    <div class="row"><span class="lbl">Tỏa sáng</span><span id="pulse"></span></div>
+  </div>
+  <div id="hint"></div>
+  <div id="flash"></div>
+  <div id="overlay">
+    <div class="card">
+      <h1 id="ov-title">Đảo Đèn Lồng</h1>
+      <p id="ov-sub">Đêm 1 · Đảo Bến</p>
+      <p id="ov-body">Gom đom đóm, nạp vào 5 Đèn Lồng Lớn trước bình minh. Né Bóng Mực!</p>
+      <ul class="keys">
+        <li><b>W A S D</b> di chuyển · <b>Space</b> nhảy</li>
+        <li><b>Kéo chuột</b> hoặc <b>← →</b> xoay camera</li>
+        <li><b>E</b> nạp ánh sáng vào đèn · <b>F</b> tỏa sáng xua Bóng Mực</li>
+        <li><b>R</b> chơi lại</li>
+      </ul>
+      <button id="ov-btn">Bắt đầu</button>
+    </div>
+  </div>
+  <script type="module" src="/src/web/main.js"></script>
+</body>
+</html>

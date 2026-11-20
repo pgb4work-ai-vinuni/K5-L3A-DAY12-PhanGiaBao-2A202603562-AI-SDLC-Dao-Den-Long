@@ -1,0 +1,4 @@
+contract_example: exit=0, 17 dòng, end={"type":"end","ticks":546,"state":"lost","score":10}
+win_last_lantern: exit=0, 13 dòng, end={"type":"end","ticks":231,"state":"won","score":532}
+determinism seed 42: GIỐNG HỆT (run1 57 ms)
+bad inputs exit code: 2

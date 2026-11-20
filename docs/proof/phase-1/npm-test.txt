@@ -1,0 +1,35 @@
+
+> dao-den-long@0.1.0 test
+> node --test tests/core.test.js tests/headless.test.js
+
+✔ tick 0: người chơi ở (0,0,0), 5 đèn, đúng flames/thời gian (1.795ms)
+✔ player_speed: đi +Z 120 tick = 12 m (khớp ví dụ contract) (0.8013ms)
+✔ cam_yaw_deg xoay hướng đi đúng công thức (0.1914ms)
+✔ nhặt đom đóm trong pickup_radius (<=), sự kiện ghi tick = k+1 (0.3243ms)
+✔ không nhặt quá carry_capacity (0.1773ms)
+✔ interact cạnh false->true nạp đèn, đủ lantern_cost thì thắp (0.2015ms)
+✔ thắp đèn cuối cùng => thắng all_lit, có điểm thưởng (0.232ms)
+✔ dựng scenario không phát sự kiện, không cộng điểm (0.1237ms)
+✔ Bóng Mực đuổi với shade_speed và chạm => mất flame, rơi đom đóm, bất tử invuln_s (0.514ms)
+✔ hết flames => thua no_flames (0.2116ms)
+✔ pulse tốn pulse_cost, stun + đẩy Bóng Mực trong pulse_radius, có cooldown (0.2351ms)
+✔ không đủ ánh sáng thì không pulse (0.1202ms)
+✔ Bóng Mực không vào safe_radius của đèn đã thắp (1.8908ms)
+✔ hết giờ => thua dawn đúng tick (0.2691ms)
+✔ InputTimeline: giữ giá trị cũ, tick phải tăng nghiêm ngặt (0.462ms)
+✔ validateScenario bắt lỗi định dạng (0.2143ms)
+✔ nhảy: rời mặt đất rồi quay về Y = 0 (0.2788ms)
+✔ định dạng: snapshot tick 0 đầu tiên, end cuối cùng, --ticks N chạy đúng N bước (55.4559ms)
+✔ ví dụ inputs của contract: tick 120 người chơi ở z = 12 (54.5859ms)
+✔ tính tất định: cùng seed => output giống hệt (180.3121ms)
+✔ inputs/scenario sai định dạng => mã thoát 2 (155.4723ms)
+✔ game kết thúc trước --ticks thì dừng, end.ticks = số bước đã chạy (58.6525ms)
+✔ kịch bản thắng trọn vẹn từ file (64.5361ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 647.9565
