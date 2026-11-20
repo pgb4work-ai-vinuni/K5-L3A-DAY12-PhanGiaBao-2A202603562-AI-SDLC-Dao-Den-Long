@@ -8,7 +8,7 @@ Tái tạo: `npm install && npm test && npm run proof -- phase-1`. Output headle
 | 2 | Đi lại, nhảy, camera 3D | test `player_speed`, `cam_yaw`, `nhảy`; chơi thử | `npm-test.txt`, `screenshot-play.jpg` | Đạt |
 | 3 | Đom đóm rải rác, nhặt được | test `nhặt đom đóm` (tick 35), `carry_capacity` | `npm-test.txt`, `contract_example.jsonl` | Đạt |
 | 4 | Nạp ánh sáng, thắp đèn | test `interact…`, scenario thắng | `win_last_lantern.jsonl` | Đạt |
-| 5 | Bóng Mực xuất hiện, đuổi | test chạm/flames, `seed42_run1.jsonl` (`shade_spawned`) | `seed42_run1.jsonl` | Đạt |
+| 5 | Bóng Mực xuất hiện, đuổi | test chạm/flames; chạy cả đêm seed 42 khi Mây đứng yên: Bóng Mực đuổi tới, 3 lần `player_hit`, thua `no_flames` ở tick 734 | `seed42_run1.jsonl` | Đạt (sự kiện `shade_spawned` mỗi 45 s chưa có bằng chứng riêng) |
 | 6 | Tỏa sáng xua Bóng Mực, tốn ánh sáng | test `pulse…`, `không đủ ánh sáng` | `npm-test.txt` | Đạt |
 | 7 | Bóng Mực sợ đèn (safe_radius) | test `safe_radius` | `npm-test.txt` | Đạt |
 | 8 | Thắng / thua / điểm | test `all_lit`, `no_flames`, `dawn` | `npm-test.txt`, `win_last_lantern.jsonl` (score 532) | Đạt |
